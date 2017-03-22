@@ -63,7 +63,7 @@ int main() {
 
         getFrame(presentMap);
         //sleep(1); //cam sleep(1) + delta, timp de executie pentru fiecare tura
-        int scoreMap[presentMap.height][presentMap.width] = {0};
+        int scoreMap[presentMap.height+1][presentMap.width+1] = {0};
 
         for(unsigned short a = 0; a < presentMap.height; a++) {
             for(unsigned short b = 0; b < presentMap.width; b++) {
@@ -78,7 +78,7 @@ int main() {
                            
                             const hlt::Location neighborLocation = presentMap.getLocation({ b, a }, i);
                             scoreMap[neighborLocation.y][neighborLocation.x] = neighborSite.production * 5 - (neighborSite.strength * 7 / 10);
-                            heap.push({neighborLocation.y, neighborLocation.x, scoreMap[neighborLocation.y][neighborLocation.x]});
+                            heap.push({neighborLocation.x, neighborLocation.y, scoreMap[neighborLocation.y][neighborLocation.x]});
                             //output << "border( " << neighborLocation.x << ", " << neighborLocation.y << "): " <<  scoreMap[neighborLocation.x][neighborLocation.y] << " ";
                             //output << "border( " << b << ", " << a << "): " <<  scoreMap[neighborLocation.y][neighborLocation.x] << " ";
                          }
@@ -97,11 +97,11 @@ int main() {
 
             LocationScore site = heap.top();
             heap.pop();
-            output << "border( " << site.y << ", " << site.x << "): " <<  site.score << " ";
+            output << "border( " << site.x << ", " << site.y << "): " <<  site.score << " ";
             for(unsigned char i = 1; i < 5; i++) {
                 //problema e la indexare
-                const hlt::Site neighborSite = presentMap.getSite({ site.y, site.x}, i);
-                const hlt::Location neighborLocation = presentMap.getLocation({ site.y, site.x}, i);
+                const hlt::Site neighborSite = presentMap.getSite({ site.x, site.y}, i);
+                const hlt::Location neighborLocation = presentMap.getLocation({ site.x, site.y}, i);
                 
                 if((neighborSite.owner == myID) && (scoreMap[neighborLocation.y][neighborLocation.x] == 0)) {
                     //rendundant
@@ -121,8 +121,8 @@ int main() {
 
                             scoreMap[neighborLocation.y][neighborLocation.x] = site.score - neighborSite.production - 2;
                             moves.insert({ { neighborLocation.x, neighborLocation.y} , reverseCardinal(i)});
-                            output << "DAU MISCAREA "<< neighborLocation.y << " " << neighborLocation.x << " " << reverseCardinal(i) + 41 << " " << neighborSite.production + 41 << "\n" ;
-                            heap.push({neighborLocation.y, neighborLocation.x, scoreMap[neighborLocation.y][neighborLocation.x]});
+                            output << "DAU MISCAREA "<< site.x << " " << site.y << " " << reverseCardinal(i) + 41 << " " << neighborSite.production + 41 << "\n" ;
+                            heap.push({neighborLocation.x, neighborLocation.y, scoreMap[neighborLocation.y][neighborLocation.x]});
 
                     }
 
