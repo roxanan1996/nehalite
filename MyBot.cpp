@@ -63,7 +63,7 @@ int main() {
 
         getFrame(presentMap);
         //sleep(1); //cam sleep(1) + delta, timp de executie pentru fiecare tura
-        int scoreMap[presentMap.height+1][presentMap.width+1] = {0};
+        int scoreMap[presentMap.height][presentMap.width] = {0};
 
         for(unsigned short a = 0; a < presentMap.height; a++) {
             for(unsigned short b = 0; b < presentMap.width; b++) {
