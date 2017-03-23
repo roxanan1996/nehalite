@@ -56,10 +56,10 @@ int main() {
     sendInit("MyC++Bot");
 //std::vector< std::vector<LocationScore> > scoreMap(presentMap.height, std::vector<LocationScore>(presentMap.width));
 //int scoreMap[presentMap.height][presentMap.width] = {0};
-
+int acc = 0;
     std::set<hlt::Move> moves;
     while(true) {
-        moves.clear();
+        moves.clear();acc++;
 
         getFrame(presentMap);
         //sleep(1); //cam sleep(1) + delta, timp de executie pentru fiecare tura
@@ -93,48 +93,69 @@ int main() {
         }
         output << '\n'; 
 
+        //grija la indexare aici
         while(!heap.empty()) {
 
             LocationScore site = heap.top();
             heap.pop();
             output << "border( " << site.x << ", " << site.y << "): " <<  site.score << " ";
             for(unsigned char i = 1; i < 5; i++) {
-                //problema e la indexare
+                
                 const hlt::Site neighborSite = presentMap.getSite({ site.x, site.y}, i);
                 const hlt::Location neighborLocation = presentMap.getLocation({ site.x, site.y}, i);
                 
                 if((neighborSite.owner == myID) && (scoreMap[neighborLocation.y][neighborLocation.x] == 0)) {
-                    //rendundant
-                    if(neighborSite.strength == 0) {
 
-                        moves.insert({ { neighborLocation.x, neighborLocation.y} , 0});
+                    scoreMap[neighborLocation.y][neighborLocation.x] = site.score - neighborSite.production - 2;
+                    heap.push({neighborLocation.x, neighborLocation.y, scoreMap[neighborLocation.y][neighborLocation.x]});
 
-                    } else if(neighborSite.strength < neighborSite.production * 5) {
+                }
 
-                            moves.insert({ { neighborLocation.x, neighborLocation.y} , 0});
+            }
 
-                        } else if((neighborSite.strength < presentMap.getSite({ neighborLocation.x, neighborLocation.y} , reverseCardinal(i)).strength) && (myID != presentMap.getSite({ neighborLocation.x, neighborLocation.y} , reverseCardinal(i)).owner)) {
+        }
 
-                                moves.insert({ { neighborLocation.x, neighborLocation.y} , 0});
+        for(unsigned short a = 0; a < presentMap.height; a++) {
+            for(unsigned short b = 0; b < presentMap.width; b++) {
 
-                                } else {
+                if (presentMap.getSite({ b, a }).owner == myID) {
+                    
+                    const hlt::Site currentSite = presentMap.getSite({ b, a });
 
-                            scoreMap[neighborLocation.y][neighborLocation.x] = site.score - neighborSite.production - 2;
-                            moves.insert({ { neighborLocation.x, neighborLocation.y} , reverseCardinal(i)});
-                            output << "DAU MISCAREA "<< site.x << " " << site.y << " " << reverseCardinal(i) + 41 << " " << neighborSite.production + 41 << "\n" ;
-                            heap.push({neighborLocation.x, neighborLocation.y, scoreMap[neighborLocation.y][neighborLocation.x]});
+                    if(currentSite.strength > 5 * currentSite.production) {
+
+                        int maxScore = INT_MIN;
+                        unsigned char dir = 0;
+
+                        for(unsigned char i = 1; i < 5; i++) {
+                           
+                            const hlt::Location neighborLocation = presentMap.getLocation({ b, a}, i);
+                            if(maxScore < scoreMap[neighborLocation.y][neighborLocation.x]) {
+
+                                maxScore = scoreMap[neighborLocation.y][neighborLocation.x];
+                                dir = i;
+
+                            }
+
+                        }
+
+                        moves.insert({ { b, a} , dir});
 
                     }
 
                 }
 
             }
+        }
 
-        }/*
         output << std::endl;
+        output << "FRAME" <<acc;
         for(hlt::Move print : moves)
 
-            output << print.loc.x << " " << print.loc.y << " " << print.dir + 41 << " ";
+            output << print.dir + 41 << " ";
+        output << std::endl;
+        output << std::endl;
+        output << std::endl;
 /*
         for(unsigned short a = 0; a < presentMap.height; a++) {
             for(unsigned short b = 0; b < presentMap.width; b++) {
@@ -177,7 +198,42 @@ int main() {
 
             }
 
-        } */
+        } 
+
+for(unsigned char i = 1; i < 5; i++) {
+                
+                const hlt::Site neighborSite = presentMap.getSite({ site.x, site.y}, i);
+                const hlt::Location neighborLocation = presentMap.getLocation({ site.x, site.y}, i);
+                
+                if((neighborSite.owner == myID) && (scoreMap[neighborLocation.y][neighborLocation.x] == 0)) {
+
+                    scoreMap[neighborLocation.y][neighborLocation.x] = site.score - neighborSite.production - 2;
+
+                    if(neighborSite.strength < neighborSite.production * 5) {
+
+                        moves.insert({ { neighborLocation.x, neighborLocation.y} , 0});
+
+                    }
+
+                    else if((neighborSite.strength < presentMap.getSite({ site.x, site.y}).strength) && (presentMap.getSite({ site.x, site.y}).owner == 0)) {
+
+                            moves.insert({ { neighborLocation.x, neighborLocation.y} , 0});
+
+                            } 
+
+                            else {
+
+                            moves.insert({ { neighborLocation.x, neighborLocation.y} , reverseCardinal(i)});
+                            output << "DAU MISCAREA "<< site.x << " " << site.y << " " << reverseCardinal(i) + 41 << " " << neighborSite.production + 41 << "\n" ;
+                            heap.push({neighborLocation.x, neighborLocation.y, scoreMap[neighborLocation.y][neighborLocation.x]});
+
+                            }
+
+                    }
+
+            }
+
+        */
 
         sendFrame(moves);
     
