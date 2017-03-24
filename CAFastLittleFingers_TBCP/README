@@ -1,0 +1,61 @@
+Mediu de Dezvoltare:
+	Sa lucrat folosind platforma GitHub pentru schimbare de cod si in limbajul C++
+
+Modalitate de Compilare:
+	Impreuna cu botul "Etapa1_TBCP.cpp" si fisierele date de la Halite.io, "hlt.hpp" si "networking.hpp", se va rula comanda make care va forma executabilul si dupa se poate folosi comanda make runStage1 pentru testare.
+
+Sursa de inspiratie:
+	http://braino.org/thoughts/halite_the_simple_way.html
+
+Noua ne-a placut mult ideea pe care am gasit-o la acest link, insa in final am ajuns la concluzia ca pentru etapa care va urma, nu va da un randament prea bun si vom folosi o complet alta implementare pe care am dezvoltat-o impreuna. Legat strict de etapa aceasta, fiecare membru al echipei a incercat sa-si faca implementarea proprie a ideii de mai sus, astfel a ne obisnui fiecare cum se lucreaza cu codul de inceput primit de la Halite.io si a ne face o idee despre cum sta treaba. Astfel, in final ne-am adunat implementarile, am unificat totul intr-o singura implementare care zicem noi ca a fost cea mai bine facuta si dupa a urmat o sesiune de testari, in care am ajuns la concluzia ca pentru aceasta etapa trebuie schimbata heuristica propusa in link-ul de mai sus si tot in aceste teste am realizat ca nu suntem satisfacuti de idee cand vine vorba pentru etapele urmatoare.
+
+Aceasta implementare contine 2 parcurgeri a intregii harti si un algoritm de parcurgere BFS.
+In prima parcurgere a hartii, aflam granitele(teritoriul neutru de la granite mai exact) teritoriului nostru, le atribuim un scor si le introducem intr-o coada cu prioritati.
+Urmeaza un while, care in principiu face un BFS iterativ, adica ia granitele din coada cu prioritate(adica ne pasa sa incepem parcurgerea BFS tot timpul de la casutele cu scorul cel mai mare),
+se uite la vecinii care apartin teritoriului nostru si le atribuie si lor un scor(prin atribuirea scorului lor - productia pe care o are vecinul) si dupa se adauga si acesta in coada cu prioritate.
+Marcarea casutelor deja vizitate se face printr-o matrice de scoruri care tine minte ce scor are casuta respectiva, astfel BFS se va termina cand tot teritoritoriului
+nostru i-a fost atribuit un scor.
+Dupa se face o parcurgere a hartii intregi dinou si cand se gaseste un teritoriu al nostru, se verifica vecinii si se muta acesta la vecinul cu scorul cel mai mare,
+asta doar daca are destula putere sa o cucereasca(daca e vorba de un teritoriu neutru) sau se asteapta pana cand are puterea mai mare de 5*productia teritotiului curent.
+
+Astfel complexitatea este teta(n^2) pentru parcurgerea intrugului teritoriu si teta(T + G), unde T este numarul de casute pe care noi le controlam si G este numarul
+de granitel neutre ale teritoriului, pentru algoritmul de BFS.
+Astfel putem spune ca complexitatea botului facut de noi este teta(n^2).
+
+Precizare:
+	Ruland make si dupa make runStage1 in folderul curent(in care se afla si acest README), cu 		tot ce a fost inclusa in el, a mers folosirea checker-ului si a dat:
+
+	Compiling game engine..
+	/bin/sh: 1: cd: can't cd to ./environment
+	make[1]: Entering directory '/home/codis/Desktop/CAFastLittleFingers_TBCP'
+	g++ -std=c++11 Etapa1_TBCP.cpp -o MyBot
+	make[1]: Leaving directory '/home/codis/Desktop/CAFastLittleFingers_TBCP'
+	cp: cannot stat './environment/halite': No such file or directory
+	Compiling player sources..
+	make[1]: Entering directory '/home/codis/Desktop/CAFastLittleFingers_TBCP'
+	g++ -std=c++11 Etapa1_TBCP.cpp -o MyBot
+	make[1]: Leaving directory '/home/codis/Desktop/CAFastLittleFingers_TBCP'
+	Round 1 - single player map conquest!
+	./MyBot
+	Replay file: 20x15-1-42.hlt
+	Map conquered in 102!
+	Map score: 0.1
+	./MyBot
+	Replay file: 15x20-1-42.hlt
+	Map conquered in 155!
+	Map score: 0.1
+	./MyBot
+	Replay file: 30x30-1-42.hlt
+	Map conquered in 184!
+	Map score: 0.1
+	./MyBot
+	Replay file: 40x40-1-42.hlt
+	Map conquered in 187!
+	Map score: 0.1
+	./MyBot
+	Replay file: 50x50-1-42.hlt
+	Map conquered in 219!
+	Map score: 0.1
+	Round 1 - done!
+	Final score: 0.5/0.5
+
