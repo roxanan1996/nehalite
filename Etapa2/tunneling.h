@@ -2,8 +2,8 @@
 using namespace std;
 
 // afla coordonatele initiale
-pair<unsigned short, unsigned short> initialPosition (hlt::GameMap presentMap, unsigned char myID) {
-    pair<unsigned short, unsigned short> coord;
+hlt::Location initialPosition (hlt::GameMap presentMap, unsigned char myID) {
+
     for(unsigned short a = 0; a < presentMap.height; a++) {
             
             for(unsigned short b = 0; b < presentMap.width; b++) {
@@ -12,13 +12,11 @@ pair<unsigned short, unsigned short> initialPosition (hlt::GameMap presentMap, u
 
                     //Do Nothing 
                     // gasesc coordonatele unde am botul prima oara
-                    coord = pair<unsigned short, unsigned short>(a, b);
-                    return coord;
+                    return {b, a};
+
                 }
             }
-    }
-
-    return coord;        
+    }       
             
 }
 // calculeaza subsecventa de suma maxima dintr-un array

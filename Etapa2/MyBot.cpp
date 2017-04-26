@@ -18,6 +18,42 @@
 #include "expansion.h"
 #include "tunneling.h"
 
+hlt::Location minimumDistance(hlt::Location startPoint, unsigned short maxLeft,
+                                unsigned short maxRight, unsigned short maxUp, unsigned short maxDown,
+                                hlt::GameMap &presentMap) {
+
+    std::vector<std::pair<float, hlt::Location> > coord;
+    
+    float distance0 = presentMap.getDistance(startPoint, {maxLeft, maxDown});
+    float distance1 = presentMap.getDistance(startPoint, {maxRight, maxDown});
+    float distance2 = presentMap.getDistance(startPoint, {maxLeft, maxUp});
+    float distance3 = presentMap.getDistance(startPoint, {maxRight, maxUp});
+
+    coord.push_back(std::pair<float, hlt::Location>(distance0, {maxLeft, maxDown}));
+    coord.push_back(std::pair<float, hlt::Location>(distance1, {maxRight, maxDown}));
+    coord.push_back(std::pair<float, hlt::Location>(distance2, {maxLeft, maxUp}));
+    coord.push_back(std::pair<float, hlt::Location>(distance3, {maxRight, maxUp}));
+
+  /*  switch(min) {
+        case distance[0] : return {maxLeft, maxDown};
+        case distance[1] : return {maxRight, maxDown};
+        case distance[0] : return {maxLeft, maxUp};
+        case distance[0] : return {maxRight, maxUp};
+    }
+    */
+   float min = coord[0].first;
+    hlt::Location destination = coord[0].second;
+
+    for (int i = 1; i < 4; ++i) {
+        if (min < coord[i].first) {
+            min = coord[i].first;
+            destination = coord[i].second;
+        }
+    }
+
+    return destination;
+}
+
 unsigned char sendBotTo(hlt::Location botLocation, hlt::Location destinationLocation, hlt::GameMap &presentMap) {
 
     int distance;
@@ -163,10 +199,9 @@ int main() {
     middleI = (maxLeft + maxRight) / 2;
     middleJ = (maxUp + maxDown) / 2;
 
-    pair<unsigned short, unsigned short> coord = initialPosition(presentMap, myID);
-
-    output << "poz initiala: " << coord.first << " " << coord.second << "\n";
-    output << '\n'; 
+    const hlt::Location initPost = initialPosition(presentMap, myID);
+    const hlt::Location zone = minimumDistance(initPost, maxLeft, maxRight, maxUp, maxDown, presentMap);
+    
     output << "mijlocul " << middleI << " " << middleJ << "\n";
     output << maxLeft << " " << maxRight << " " << maxUp << " " << maxDown << "\n";
     output.close();
@@ -187,10 +222,10 @@ int main() {
             case 1: {
 
                 //Tunneling
-                tunneling(presentMap, {middleJ, middleI}, moves, myID);
+                tunneling(presentMap, zone, moves, myID);
 
                 //if destinatian reached, switch to expansion strategy
-                if(presentMap.getSite({middleJ, middleI}).owner == myID) {
+                if(presentMap.getSite(zone).owner == myID) {
 
                     strategy = 2;
 
