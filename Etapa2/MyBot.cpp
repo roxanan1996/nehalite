@@ -45,7 +45,7 @@ hlt::Location minimumDistance(hlt::Location startPoint, unsigned short maxLeft,
     hlt::Location destination = coord[0].second;
 
     for (int i = 1; i < 4; ++i) {
-        if (min < coord[i].first) {
+        if (min > coord[i].first) {
             min = coord[i].first;
             destination = coord[i].second;
         }
